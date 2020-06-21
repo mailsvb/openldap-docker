@@ -61,19 +61,11 @@ ORG_CONF="/etc/openldap/organisation.ldif"
 sed -i "s~%SUFFIX%~$SUFFIX~g" "$ORG_CONF"
 sed -i "s~%ORGANISATION_NAME%~$ORGANISATION_NAME~g" "$ORG_CONF"
 
-# replace variables in user configuration
-USER_CONF="/etc/openldap/users.ldif"
-sed -i "s~%SUFFIX%~$SUFFIX~g" "$USER_CONF"
-sed -i "s~%USER_UID%~$USER_UID~g" "$USER_CONF"
-sed -i "s~%USER_GIVEN_NAME%~$USER_GIVEN_NAME~g" "$USER_CONF"
-sed -i "s~%USER_SURNAME%~$USER_SURNAME~g" "$USER_CONF"
-if [ -z "$USER_PW" ]; then USER_PW="password"; fi
-sed -i "s~%USER_PW%~$USER_PW~g" "$USER_CONF"
-sed -i "s~%USER_EMAIL%~$USER_EMAIL~g" "$USER_CONF"
+sed -i "s~%ROOT_USER%~$ROOT_USER~g" "/var/www/html/config/config.php"
+sed -i "s~%SUFFIX%~$SUFFIX~g" "/var/www/html/config/config.php"
 
 # add organisation and users to ldap (order is important)
 slapadd -l "$ORG_CONF"
-slapadd -l "$USER_CONF"
 
 # add any scripts in ldif
 for l in /ldif/*; do
@@ -87,10 +79,10 @@ done
 
 if [ "$LDAPS" = true ]; then
   echo "Starting LDAPS"
-  slapd -d "$LOG_LEVEL" -h "ldaps:///"
+  slapd -d "$LOG_LEVEL" -h "ldap://:389/ ldaps://:636/"
 else
   echo "Starting LDAP"
-  slapd -d "$LOG_LEVEL" -h "ldap:///"
+  slapd -d "$LOG_LEVEL" -h "ldap://:389/"
 fi
 
 # run command passed to docker run

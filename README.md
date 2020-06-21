@@ -18,11 +18,6 @@ to customise LDAP:
 | SUFFIX | Organisation distinguished name | dc=example,dc=com |
 | ROOT_USER | Root username | admin |
 | ROOT_PW | Root password | password |
-| USER_UID | Initial user's uid | pgarrett |
-| USER_GIVEN_NAME | Initial user's given name | Phill |
-| USER_SURNAME | Initial user's surname | Garrett |
-| USER_EMAIL | Initial user's email | pgarrett@example.com |
-| USER_PW | Initial user's password | password |
 | ACCESS_CONTROL | Global access control | access to * by * read |
 | LOG_LEVEL | LDAP logging level, see below for valid values. | stats |
 
@@ -32,6 +27,7 @@ For example:
 docker run -t -p 389:389 \
   -e ORGANISATION_NAME="Beispiel gmbh" \
   -e SUFFIX="dc=beispiel,dc=de" \
+  -e ROOT_USER="admin" \
   -e ROOT_PW="geheimnis" \
   pgarrett/ldap-alpine
 ```
@@ -61,25 +57,6 @@ ldapsearch -x -b "dc=beispiel,dc=de" "uid=pgarrett"
 | parse | print entry parsing debugging |
 | sync | syncrepl consumer processing |
 | none | only messages that get logged whatever log level is set |
-
-## Custom ldif files
-
-`*.ldif` files can be used to add lots of people to the organisation on
-startup.
-
-Copy ldif files to /ldif and the container will execute them. This can be
-done either by extending this Dockerfile with your own:
-
-```
-FROM pgarrett/ldap-alpine
-COPY my-users.ldif /ldif/
-```
-
-Or by mounting your scripts directory into the container:
-
-```
-docker run -t -p 389:389 -v /my-ldif:/ldif pgarrett/ldap-alpine
-```
 
 ## Persist data
 
