@@ -1,11 +1,21 @@
-# LDAP Alpine
+# OpenLDAP server with phpLDAPAdmin
 
 The Lightweight Directory Access Protocol (LDAP) is an open, vendor-neutral,
 industry standard application protocol for accessing and maintaining
 distributed directory information services over an Internet Protocol (IP)
 network.
 
-This image is based on Alpine Linux and OpenLDAP.
+This image is based on Alpine Linux, OpenLDAP and phpLDAPAdmin
+
+## Build the image
+
+First, clone the repository to your machine
+
+```
+git clone https://github.com/mailsvb/ldap-alpine.git
+cd ldap-alpine
+docker build -t openldap:latest .
+```
 
 ## Customisation
 
@@ -24,18 +34,12 @@ to customise LDAP:
 For example:
 
 ```
-docker run -t -p 389:389 \
-  -e ORGANISATION_NAME="Beispiel gmbh" \
-  -e SUFFIX="dc=beispiel,dc=de" \
+docker run -dit -p 80:80 -p 389:389 -p 636:636 --restart unless-stopped --name openldap \
+  -e ORGANISATION_NAME="My Company" \
+  -e SUFFIX="dc=company,dc=com" \
   -e ROOT_USER="admin" \
-  -e ROOT_PW="geheimnis" \
-  pgarrett/ldap-alpine
-```
-
-Search for user:
-
-```
-ldapsearch -x -b "dc=beispiel,dc=de" "uid=pgarrett"
+  -e ROOT_PW="password" \
+  openldap:latest
 ```
 
 ## Logging Levels
@@ -64,7 +68,9 @@ The container uses a standard mdb backend. To persist this database outside the
 container mount `/var/lib/openldap/openldap-data`. For example:
 
 ```
-docker run -t -p 389:389 -v /my-backup:/var/lib/openldap/openldap-data pgarrett/ldap-alpine
+docker run run -t -p 389:389 \
+  --mount source=openldap-data,target=/var/lib/openldap/openldap-data \
+  openldap:latest
 ```
 
 ## Transport Layer Security
@@ -77,7 +83,6 @@ provide all three TLS environment variables.
 | CA_FILE | PEM-format file containing certificates for the CA's that slapd will trust | /etc/ssl/certs/ca.pem |
 | KEY_FILE | The slapd server private key | /etc/ssl/certs/public.key |
 | CERT_FILE | The slapd server certificate | /etc/ssl/certs/public.crt |
-| TLS_VERIFY_CLIENT | Slapd option for client certificate verification | try, never, demand |
 
 Note these variables inform the entrypoint script (executed on startup) where
 to find the SSL certificates inside the container. So the certificates must
@@ -89,7 +94,7 @@ docker run -t -p 389:389 \
   -e CA_FILE /etc/ssl/certs/ca.pem \
   -e KEY_FILE /etc/ssl/certs/public.key \
   -e CERT_FILE /etc/ssl/certs/public.crt \
-  pgarrett/ldap-alpine
+  openldap:latest
 ```
 
 Where `/my-certs` on the host contains the three certificate files `ca.pem`,
@@ -117,7 +122,7 @@ and allows all others to read these entries:
 ```
 docker run -t -p 389:389 \
   -e ACCESS_CONTROL="access to * by self write by anonymous auth by users read" \
-  pgarrett/ldap-alpine
+  openldap:latest
 ```
 
 Now `ldapsearch -x -b "dc=example,dc=com" "uid=pgarret"` will return no results.
