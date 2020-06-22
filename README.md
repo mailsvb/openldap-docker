@@ -24,8 +24,8 @@ to customise LDAP:
 
 | VARIABLE | DESCRIPTION | DEFAULT |
 | :------- | :---------- | :------ |
-| ORGANISATION_NAME | Organisation name | Example Ltd |
-| SUFFIX | Organisation distinguished name | dc=example,dc=com |
+| ORGANISATION_NAME | Organisation name | Test |
+| SUFFIX | Organisation distinguished name | dc=test,dc=local |
 | ROOT_USER | Root username | admin |
 | ROOT_PW | Root password | password |
 | ACCESS_CONTROL | Global access control | access to * by * read |
@@ -35,8 +35,8 @@ For example:
 
 ```
 docker run -dit -p 80:80 -p 389:389 -p 636:636 --restart unless-stopped --name openldap \
-  -e ORGANISATION_NAME="My Company" \
-  -e SUFFIX="dc=company,dc=com" \
+  -e ORGANISATION_NAME="Test" \
+  -e SUFFIX="dc=test,dc=local" \
   -e ROOT_USER="admin" \
   -e ROOT_PW="password" \
   openldap:latest
