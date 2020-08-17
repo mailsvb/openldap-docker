@@ -25,6 +25,8 @@ COPY scripts/* /etc/openldap/
 COPY docker-entrypoint.sh /
 COPY supervisord.conf /etc/supervisord.conf
 
+RUN dos2unix /docker-entrypoint.sh
+
 EXPOSE 80
 EXPOSE 389
 EXPOSE 636
