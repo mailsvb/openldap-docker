@@ -7,16 +7,6 @@ network.
 
 This image is based on Alpine Linux, OpenLDAP and phpLDAPAdmin
 
-## Build the image
-
-First, clone the repository to your machine
-
-```
-git clone https://github.com/mailsvb/ldap-alpine.git
-cd ldap-alpine
-docker build -t openldap:latest .
-```
-
 ## Customisation
 
 Override the following environment variables when running the docker container
@@ -39,7 +29,7 @@ docker run -dit -p 80:80 -p 389:389 -p 636:636 --restart unless-stopped --name o
   -e SUFFIX="dc=test,dc=local" \
   -e ROOT_USER="admin" \
   -e ROOT_PW="password" \
-  openldap:latest
+  mailsvb/ldap:latest
 ```
 
 ## Logging Levels
@@ -70,7 +60,7 @@ container mount `/var/lib/openldap/openldap-data`. For example:
 ```
 docker run run -t -p 389:389 \
   --mount source=openldap-data,target=/var/lib/openldap/openldap-data \
-  openldap:latest
+  mailsvb/ldap:latest
 ```
 
 ## Transport Layer Security
@@ -94,7 +84,7 @@ docker run -t -p 389:389 \
   -e CA_FILE /etc/ssl/certs/ca.pem \
   -e KEY_FILE /etc/ssl/certs/public.key \
   -e CERT_FILE /etc/ssl/certs/public.crt \
-  openldap:latest
+  mailsvb/ldap:latest
 ```
 
 Where `/my-certs` on the host contains the three certificate files `ca.pem`,
@@ -122,7 +112,7 @@ and allows all others to read these entries:
 ```
 docker run -t -p 389:389 \
   -e ACCESS_CONTROL="access to * by self write by anonymous auth by users read" \
-  openldap:latest
+  mailsvb/ldap:latest
 ```
 
 Now `ldapsearch -x -b "dc=example,dc=com" "uid=pgarret"` will return no results.
