@@ -7,9 +7,18 @@ network.
 
 This image is based on Alpine Linux, OpenLDAP and phpLDAPAdmin
 
-[![GitHub Workflow - CI](https://github.com/mailsvb/ldap-alpine/workflows/build/badge.svg)](https://github.com/mailsvb/ldap-alpine/actions?workflow=build)
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/mailsvb/ldap-alpine)](https://github.com/mailsvb/ldap-alpine/releases/latest)
-[![Docker Image Size (latest semver)](https://img.shields.io/docker/image-size/mailsvb/ldap?sort=semver)](https://hub.docker.com/repository/docker/mailsvb/ldap)
+[![GitHub Workflow - CI](https://github.com/mailsvb/openldap-docker/workflows/build/badge.svg)](https://github.com/mailsvb/openldap-docker/actions?workflow=build)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/mailsvb/openldap-docker)](https://github.com/mailsvb/openldap-docker/releases/latest)
+[![Docker Image Size (latest semver)](https://img.shields.io/docker/image-size/mailsvb/openldap?sort=semver)](https://hub.docker.com/repository/docker/mailsvb/openldap)
+
+```
+docker run -dit -p 80:80 -p 389:389 -p 636:636 --restart unless-stopped --name openldap \
+  -e ORGANISATION_NAME="Test" \
+  -e SUFFIX="dc=test,dc=local" \
+  -e ROOT_USER="admin" \
+  -e ROOT_PW="password" \
+  mailsvb/openldap:latest
+```
 
 ## Customisation
 
@@ -25,18 +34,7 @@ to customise LDAP:
 | ACCESS_CONTROL | Global access control | access to * by * read |
 | LOG_LEVEL | LDAP logging level, see below for valid values. | stats |
 
-For example:
-
-```
-docker run -dit -p 80:80 -p 389:389 -p 636:636 --restart unless-stopped --name openldap \
-  -e ORGANISATION_NAME="Test" \
-  -e SUFFIX="dc=test,dc=local" \
-  -e ROOT_USER="admin" \
-  -e ROOT_PW="password" \
-  mailsvb/ldap:latest
-```
-
-## Logging Levels
+#### Logging Levels
 
 | NAME | DESCRIPTION |
 | :--- | :---------- |
@@ -56,7 +54,7 @@ docker run -dit -p 80:80 -p 389:389 -p 636:636 --restart unless-stopped --name o
 | sync | syncrepl consumer processing |
 | none | only messages that get logged whatever log level is set |
 
-## Persist data
+#### Persist data
 
 The container uses a standard mdb backend. To persist this database outside the
 container mount `/var/lib/openldap/openldap-data`. For example:
@@ -64,10 +62,10 @@ container mount `/var/lib/openldap/openldap-data`. For example:
 ```
 docker run run -t -p 389:389 \
   --mount source=openldap-data,target=/var/lib/openldap/openldap-data \
-  mailsvb/ldap:latest
+  mailsvb/openldap:latest
 ```
 
-## Transport Layer Security
+#### Transport Layer Security
 
 The container can be started using the encrypted LDAPS protocol. You must
 provide all three TLS environment variables.
@@ -88,7 +86,7 @@ docker run -t -p 389:389 \
   -e CA_FILE /etc/ssl/certs/ca.pem \
   -e KEY_FILE /etc/ssl/certs/public.key \
   -e CERT_FILE /etc/ssl/certs/public.crt \
-  mailsvb/ldap:latest
+  mailsvb/openldap:latest
 ```
 
 Where `/my-certs` on the host contains the three certificate files `ca.pem`,
@@ -96,7 +94,7 @@ Where `/my-certs` on the host contains the three certificate files `ca.pem`,
 
 To disable client certificates set `TLS_VERIFY_CLIENT` to `never` or `try`.
 
-## Access Control
+#### Access Control
 
 Global access to your directory can be configured via the ACCESS_CONTROL environment variable.
 
@@ -116,7 +114,7 @@ and allows all others to read these entries:
 ```
 docker run -t -p 389:389 \
   -e ACCESS_CONTROL="access to * by self write by anonymous auth by users read" \
-  mailsvb/ldap:latest
+  mailsvb/openldap:latest
 ```
 
 Now `ldapsearch -x -b "dc=example,dc=com" "uid=pgarret"` will return no results.
