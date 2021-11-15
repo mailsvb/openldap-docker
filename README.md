@@ -7,6 +7,10 @@ network.
 
 This image is based on Alpine Linux, OpenLDAP and phpLDAPAdmin
 
+[![GitHub Workflow - CI](https://github.com/mailsvb/ldap-alpine/workflows/build/badge.svg)](https://github.com/mailsvb/ldap-alpine/actions?workflow=build)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/mailsvb/ldap-alpine)](https://github.com/mailsvb/ldap-alpine/releases/latest)
+[![Docker Image Size (latest semver)](https://img.shields.io/docker/image-size/mailsvb/ldap?sort=semver)](https://hub.docker.com/repository/docker/mailsvb/ldap)
+
 ## Customisation
 
 Override the following environment variables when running the docker container
