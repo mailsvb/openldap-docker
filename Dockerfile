@@ -1,4 +1,4 @@
-FROM alpine
+FROM alpine:edge
 
 ENV ORGANISATION_NAME "Test"
 ENV SUFFIX "dc=test,dc=local"
@@ -7,12 +7,12 @@ ENV ROOT_PW "password"
 ENV ACCESS_CONTROL "access to * by * read"
 ENV LOG_LEVEL "stats"
 
-RUN apk update && apk upgrade
-RUN apk add openldap openldap-back-mdb apache2 php7-apache2 git ca-certificates supervisor openssl php7 php7-openssl php7-session php7-gettext php7-ldap php7-xml && \
+RUN apk update && apk upgrade && \
+    apk add openldap openldap-back-mdb apache2 php7-apache2 git ca-certificates supervisor openssl php7 php7-openssl php7-session php7-gettext php7-ldap php7-xml && \
     rm -rf /var/cache/apk/* && \
     mkdir -p /run/openldap /var/lib/openldap/openldap-data
 
-RUN git clone https://github.com/breisig/phpLDAPadmin.git /var/www/html
+RUN git clone --depth 1 --branch 1.2.4 https://github.com/mailsvb/phpLDAPadmin.git /var/www/html
 
 RUN sed -i "s#^DocumentRoot \".*#DocumentRoot \"/var/www/html\"#g" /etc/apache2/httpd.conf && \
     sed -i "s#/var/www/localhost/htdocs#/var/www/html#" /etc/apache2/httpd.conf && \
